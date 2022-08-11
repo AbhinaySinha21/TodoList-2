@@ -89,11 +89,13 @@ app.post("/delete", function (req, res) {
 
     });
     res.redirect("/");
+  } else {
+
+    List.findOneAndUpdate({ name: nameL }, { $pull: { itemCollection: { _id: checkedItemId } } }, function (err, found) {
+      if (!err)
+        res.redirect("/" + nameL);
+    });
   }
-  List.findOneAndUpdate({ name: nameL }, { $pull: { itemCollection: { _id: checkedItemId } } }, function (err, found) {
-    if (!err)
-      res.redirect("/" + nameL);
-  });
 
 });
 
@@ -121,7 +123,10 @@ app.get("/:types", function (req, res) {
 app.get("/about", function (req, res) {
   res.render("about");
 });
-
-app.listen(process.env.PORT, function () {
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3500;
+}
+app.listen(port, function () {
   console.log("Server started on port 3500");
 });
