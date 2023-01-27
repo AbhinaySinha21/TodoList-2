@@ -28,44 +28,24 @@ const listSchema = mongoose.Schema({
 
 const List = mongoose.model("List", listSchema);
 
-const item1 = new item({
-  name: "cook"
-});
-const item2 = new item({
-  name: "Work"
-});
-const item3 = new item({
-  name: "Personal"
-});
-
-const defaultItem = [item1, item2, item3];
-
 
 
 app.get("/", function (req, res) {
 
   item.find((err, items) => {
-    if (items.length === 0) {
-      item.insertMany(defaultItem, (err) => {
-        if (err)
-          console.log(err);
-        else
-          console.log("Success");
-      });
-      res.redirect("/");
-    }
-    else {
-      res.render("list", { listTitle: "Today", newListItems: items });
-    }
+      res.render("list", { listTitle: "ToDo-List", newListItems: items });
   });
 
 });
 
 app.post("/", function (req, res) {
-
+  let v=req.body.newItem;
+  if(v.length==0)
+      res.redirect("/");
+  else{
   const newi = new item({ name: req.body.newItem });
   const listN = req.body.list;
-  if (listN === "Today") {
+  if (listN === "ToDo-List") {
     newi.save();
     res.redirect("/");
   }
@@ -76,6 +56,7 @@ app.post("/", function (req, res) {
       res.redirect("/" + listN);
     })
   }
+}
 });
 app.post("/delete", function (req, res) {
   const checkedItemId = req.body.checkbox;
@@ -84,8 +65,6 @@ app.post("/delete", function (req, res) {
     item.findByIdAndRemove(checkedItemId, (err) => {
       if (err)
         console.log(err);
-      else
-        console.log("Deleted");
 
     });
     res.redirect("/");
@@ -106,8 +85,7 @@ app.get("/:types", function (req, res) {
     if (!err) {
       if (!found) {
         const list = new List({
-          name: customNames,
-          itemCollection: defaultItem
+          name: customNames
         });
 
         list.save();
@@ -123,10 +101,10 @@ app.get("/:types", function (req, res) {
 app.get("/about", function (req, res) {
   res.render("about");
 });
-let port = process.env.PORT;
-if (port == null || port == "") {
-  port = 3500;
-}
-app.listen(port, function () {
+// let port = process.env.PORT;
+// if (port == null || port == "") {
+//   port = 3500;
+// }
+app.listen(3500, function () {
   console.log("Server started on port 3500");
 });
